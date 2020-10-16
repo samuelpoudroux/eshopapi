@@ -2,6 +2,17 @@ const makeDb = require('./makeDb');
 
 // getManagement
 const getAllProducts = async () => {
+  let createTableProductQuery = `create table if not exists products(
+    id int primary key auto_increment,
+    name varchar(255)not null,
+    productPrice int not null,
+    category varchar(255)not null,
+    inStock boolean not null,
+    fileName varchar(255),
+    shortDescription varchar(255),
+    longDescription varchar(255)
+)`;
+await db.query(createTableProductQuery)
   let getProductsQuery = "SELECT * FROM products";
 const db = await makeDb()
 const results = await db.query(getProductsQuery)
