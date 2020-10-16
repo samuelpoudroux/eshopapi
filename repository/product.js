@@ -12,9 +12,10 @@ const getAllProducts = async () => {
     shortDescription varchar(255),
     longDescription varchar(255)
 )`;
+
+const db = await makeDb()
 await db.query(createTableProductQuery)
   let getProductsQuery = "SELECT * FROM products";
-const db = await makeDb()
 const results = await db.query(getProductsQuery)
  return results
 };
