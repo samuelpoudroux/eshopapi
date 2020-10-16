@@ -1,5 +1,3 @@
-const {} = require('../repository/image');
-
 // Display list of all products.
 exports.load = async (req, res) => {
   try {
