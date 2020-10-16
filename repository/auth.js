@@ -1,18 +1,15 @@
 const jwt = require('jsonwebtoken');
-var db = require('../db')
 const bcrypt = require('bcrypt');
 const { validateRegisterInput } = require('../validation/register');
+const makeDb = require('./makeDb');
 const accessTokenSecret = 'spwebTokenJeSuisIndechiffrable';
 
 const login = async (email, password) => {
   try {
+    const db = await makeDb()
     const getUserQueryByEmail = `SELECT * FROM users WHERE email= "${email}"`
-    const user =  await new Promise((resolve, reject) => db.query(getUserQueryByEmail,  (err, result, fields) =>  {
-      if (err) {
-        reject(err)
-      } else {
-      resolve(result);
-    }}))
+    const user = await db.query(getUserQueryByEmail)
+
     if (user.length === 0) {
       return { error: 'utilisateur inexistant' };
     } else if (user) {
@@ -49,6 +46,7 @@ const register = async (body) => {
       phoneNumber ,
        } = body
     const hash = await bcrypt.hash(password, 10);
+
     let createTableUserQuery = `create table if not exists users(
       id int primary key auto_increment,
       firstName varchar(255)not null,
@@ -61,16 +59,13 @@ const register = async (body) => {
   )`;
 let insertUserQuery = `INSERT INTO users (firstName, lastName, email, password,billsAddress,phoneNumber,role) VALUES ('${firstName}','${lastName}','${email}','${hash}', '${billsAddress}','${phoneNumber}','user')`;
 
+
+const db = await makeDb()
+await db.query(createTableUserQuery)
 let getUserQuery = `SELECT * FROM USERS WHERE email="${email}"`
- db.query(createTableUserQuery)
-  const users =  await new Promise((resolve, reject) => db.query(getUserQuery,  (err, result, fields) =>  {
-    if (err) {
-      reject(err)
-    } else {
-    resolve(result);
-  }}))
+const users = await db.query(getUserQuery)
     if (users.length === 0) {
-      db.query(insertUserQuery) 
+      await db.query(insertUserQuery) 
       return { message: 'Utilisateur enregistré avec succés' };
     } else {
       return { errors: 'utilisateur déjà existant' };
