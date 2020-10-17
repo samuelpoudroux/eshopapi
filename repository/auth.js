@@ -62,7 +62,7 @@ let insertUserQuery = `INSERT INTO users (firstName, lastName, email, password,b
 
 const db = await makeDb()
 await db.query(createTableUserQuery)
-let getUserQuery = `SELECT * FROM USERS WHERE email="${email}"`
+let getUserQuery = `SELECT * FROM 'users' WHERE email="${email}"`
 const users = await db.query(getUserQuery)
     if (users.length === 0) {
       await db.query(insertUserQuery) 

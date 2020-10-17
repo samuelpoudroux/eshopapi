@@ -3,8 +3,8 @@ const makeDb = require("./makeDb");
 const buildGlobalSearchResult = async () => {
   const db = await makeDb()
   const listTableQuery = `SHOW TABLES FROM ${process.env.DATABASE}`
+  console.log('tata',listTableQuery);
   const collectionsListArray = await db.query(listTableQuery)
-  console.log('tata',collectionsListArray);
   // nous transformons le tableau ci dessous en tableau de promesse par flatmap
   const promises = collectionsListArray.flatMap(async (collection) => {
     const {Tables_in_eshop} = collection
