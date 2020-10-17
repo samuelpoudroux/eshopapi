@@ -9,7 +9,7 @@ const buildGlobalSearchResult = async () => {
   const promises = collectionsListArray.flatMap(async (collection) => {
     const {Tables_in_eshop} = collection
     if (Tables_in_eshop !== 'users') {
-      const query = `SELECT * FROM 'products'`
+      const query = `SELECT * FROM products`
       return [
         Tables_in_eshop,
         await  db.query(query)     
