@@ -4,10 +4,11 @@ const buildGlobalSearchResult = async () => {
   const db = await makeDb()
   const listTableQuery = `SHOW TABLES FROM ${process.env.DATABASE}`
   const collectionsListArray = await db.query(listTableQuery)
+  console.log('tata',collectionsListArray);
   // nous transformons le tableau ci dessous en tableau de promesse par flatmap
   const promises = collectionsListArray.flatMap(async (collection) => {
     const tableIn = `Tables_in_${process.env.DATABASE}`
-    const {tableIn} = collection
+    const [tableIn] = collection
     if (tableIn !== 'users') {
       const query = `SELECT * FROM ${tableIn}`
       return [
