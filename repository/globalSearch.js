@@ -1,7 +1,7 @@
 const makeDb = require("./makeDb");
 
 const buildGlobalSearchResult = async () => {
-  const listTableQuery = 'SELECT table_name FROM information_schema.tables WHERE table_schema = "eshop"'
+  const listTableQuery = `SELECT table_name FROM information_schema.tables WHERE table_schema = ${process.env.DATABASE}`
   const db = await makeDb()
 
   const collectionsListArray = await db.query(listTableQuery)
