@@ -7,8 +7,7 @@ const buildGlobalSearchResult = async () => {
   console.log('tata',collectionsListArray);
   // nous transformons le tableau ci dessous en tableau de promesse par flatmap
   const promises = collectionsListArray.flatMap(async (collection) => {
-    const tableIn = `Tables_in_${process.env.DATABASE}`
-    const [tableIn] = collection
+    const tableIn = collection[`Tables_in_${process.env.DATABASE}`]
     if (tableIn !== 'users') {
       const query = `SELECT * FROM ${tableIn}`
       return [
