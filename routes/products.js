@@ -4,7 +4,7 @@ const multer = require('multer');
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, `../frontend/public/productImage`);
+    cb(null, `${process.cwd() + '/public/productImages'}`);
   },
   filename: function (req, file, cb) {
     cb(null, file.originalname);
@@ -26,4 +26,3 @@ router.delete('/:id/delete', product_Controller.product_delete);
 router.put('/:id/updateProduct', product_Controller.product_updateProduct);
 
 module.exports = router;
-product_Controller.product_create;

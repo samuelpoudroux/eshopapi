@@ -34,9 +34,9 @@ exports.product_detail = async (req, res) => {
 // Handle product createProduct on POST.
 exports.product_create = async (req, res, next) => {
   const { body } = req;
-  const filename = req.file ? req.file.filename : null;
+  const imageUrl = req.file ? `${process.env.URL +  req.file.filename }` : null
   try {
-    const product = await createProduct(body, filename);
+    const product = await createProduct(body, imageUrl);
     const { error } = product;
     if (!error) {
       res.status('200');

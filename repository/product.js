@@ -10,7 +10,8 @@ const getAllProducts = async () => {
     inStock boolean not null,
     fileName varchar(255),
     shortDescription varchar(255),
-    longDescription varchar(255)
+    longDescription varchar(255),
+    imageUrl varchar(255)
 )`;
 
 const db = await makeDb()
@@ -28,7 +29,7 @@ const result = await db.query(getProductQuery)
 };
 
 //createProduct management
-const createProduct = async (product, fileName) => {
+const createProduct = async (product, imageUrl) => {
   try {
     const { name, productPrice, category, inStock, shortDescription, longDescription} = product;
     if (!name || !productPrice || !category || !inStock) {
@@ -42,9 +43,10 @@ const createProduct = async (product, fileName) => {
                           inStock boolean not null,
                           fileName varchar(255),
                           shortDescription varchar(255),
-                          longDescription varchar(255)
+                          longDescription varchar(255),
+                          imageUrl varchar(255)
                       )`;
-  let insertProductQuery = `INSERT INTO products (name, productPrice, category, inStock, fileName, shortDescription, longDescription) VALUES ('${name}', '${productPrice}', '${category}', ${inStock}, '${fileName}', '${shortDescription ? shortDescription: null}', '${longDescription ? longDescription: null}')`;
+  let insertProductQuery = `INSERT INTO products (name, productPrice, category, inStock, shortDescription, longDescription, imageUrl) VALUES ('${name}', '${productPrice}', '${category}', ${inStock},'${shortDescription ? shortDescription: null}', '${longDescription ? longDescription: null}', '${imageUrl ? imageUrl: null}')`;
   const db = await makeDb()
   await db.query(createTableProductQuery)
    await db.query(insertProductQuery) 
