@@ -4,6 +4,7 @@ const Validator = require("validator");
 const isEmpty = require("./empty.js");
 
 const validateRegisterInput = async (data) => {
+  console.log("isvalid", isValid);
   let errors = {};
   const checkEmptyField = async () =>
     await Object.fromEntries(

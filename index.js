@@ -7,9 +7,11 @@ var productRouter = require("./routes/products");
 var globalSearchRouter = require("./routes/globalSearch");
 var authRouter = require("./routes/auth");
 var categoryRouter = require("./routes/category");
+var contactRouter = require("./routes/contact");
 const PORT = process.env.PORT || "8080";
 const server = app.listen(PORT);
 const bot = require("./socket");
+const { sendEmail } = require("./repository/contact");
 const io = require("socket.io")(server);
 
 app.use(express.static(__dirname + "/public/productImages/"));
@@ -31,6 +33,7 @@ app.use("/products", productRouter);
 app.use("/globalSearch", globalSearchRouter);
 app.use("/auth", authRouter);
 app.use("/categories", categoryRouter);
+app.use("/contact", contactRouter);
 
 //listen on every connection
 io.on("connection", (socket) => bot(socket, io));
