@@ -4,7 +4,6 @@ const Validator = require("validator");
 const isEmpty = require("./empty.js");
 
 const validateRegisterInput = async (data) => {
-  console.log("isvalid", isValid);
   let errors = {};
   const checkEmptyField = async () =>
     await Object.fromEntries(
@@ -17,7 +16,6 @@ const validateRegisterInput = async (data) => {
     );
 
   await checkEmptyField();
-
   if (!Validator.isLength(data.firstName, { min: 2, max: 30 })) {
     errors.firstName = "Name must be between 2 to 30 chars";
   }
