@@ -11,8 +11,8 @@ var contactRouter = require("./routes/contact");
 const PORT = process.env.PORT || "8080";
 const server = app.listen(PORT);
 const bot = require("./socket");
-const { sendEmail } = require("./repository/contact");
 const io = require("socket.io")(server);
+var cors = require("cors");
 
 app.use(express.static(__dirname + "/public/productImages/"));
 
@@ -24,6 +24,7 @@ app.use(function (req, res, next) {
   );
   next();
 });
+app.use(cors());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));

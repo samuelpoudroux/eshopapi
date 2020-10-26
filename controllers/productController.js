@@ -4,6 +4,7 @@ const {
   deleteProduct,
   getAllProducts,
   getProductById,
+  isProductNewNess,
 } = require("../repository/product");
 
 // Display list of all products.
@@ -12,6 +13,19 @@ exports.product_list = async (req, res) => {
     const products = await getAllProducts();
     res.status("200");
     res.json(products);
+  } catch (error) {
+    res.status("500");
+    res.send(`erreur lors de la récupération, ${error}`);
+  }
+};
+// Display list of all products.
+exports.is_Product_NewNess = async (req, res) => {
+  try {
+    const { newNess } = req.body;
+    const { id } = req.params;
+    await isProductNewNess(id, newNess);
+    res.status(200);
+    res.send("ajout avec succés");
   } catch (error) {
     res.status("500");
     res.send(`erreur lors de la récupération, ${error}`);

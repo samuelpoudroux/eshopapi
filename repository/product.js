@@ -11,7 +11,8 @@ const getAllProducts = async () => {
     fileName varchar(255),
     shortDescription varchar(255),
     longDescription varchar(255),
-    imageUrl varchar(255)
+    imageUrl varchar(255),
+    newNess boolean
 )`;
 
   const db = await makeDb();
@@ -38,6 +39,7 @@ const createProduct = async (product, imageUrl) => {
       inStock,
       shortDescription,
       longDescription,
+      newNess,
     } = product;
     if (!name || !productPrice || !category || !inStock) {
       return { error: "vérifier les champs obligatoires" };
@@ -51,13 +53,14 @@ const createProduct = async (product, imageUrl) => {
                           fileName varchar(255),
                           shortDescription varchar(255),
                           longDescription varchar(255),
-                          imageUrl varchar(255)
+                          imageUrl varchar(255),
+                          newNess boolean
                       )`;
-      let insertProductQuery = `INSERT INTO products (name, productPrice, category, inStock, shortDescription, longDescription, imageUrl) VALUES ('${name}', '${productPrice}', '${category}', ${inStock},'${
+      let insertProductQuery = `INSERT INTO products (name, productPrice, category, inStock, shortDescription, longDescription, imageUrl, newNess) VALUES ('${name}', '${productPrice}', '${category}', ${inStock},'${
         shortDescription ? shortDescription : null
       }', '${longDescription ? longDescription : null}', '${
         imageUrl ? imageUrl : null
-      }')`;
+      }', ${newNess === "true" ? newNess : "false"})`;
       const db = await makeDb();
       await db.query(createTableProductQuery);
       await db.query(insertProductQuery);
@@ -66,6 +69,11 @@ const createProduct = async (product, imageUrl) => {
   } catch (error) {
     throw error;
   }
+};
+const isProductNewNess = async (id, newNess) => {
+  const db = await makeDb();
+  let setProductAssNewNessQuery = `UPDATE products SET newNess = ${newNess} WHERE id = ${id}`;
+  await db.query(setProductAssNewNessQuery);
 };
 
 //updateProductManagement
@@ -102,4 +110,5 @@ module.exports = {
   deleteProduct,
   getAllProducts,
   getProductById,
+  isProductNewNess,
 };
