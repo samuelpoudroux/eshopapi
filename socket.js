@@ -6,7 +6,7 @@ module.exports = (socket, io) => {
     {
       id: 0,
       firstName: "virtuel",
-      message: `bienvenue mr/mme que puis je faire pour vous ?`,
+      message: `Bienvenue que puis je faire pour vous ?`,
     },
     {
       id: 0,
