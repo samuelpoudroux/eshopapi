@@ -14,7 +14,6 @@ const socketMessageManagement = (data, messages) => {
           "Modifier mes informations",
         ],
       });
-      console.log("malada");
       return messages;
       break;
     case data.message === "non" &&
