@@ -28,6 +28,12 @@ const getProductById = async (id) => {
   const result = await db.query(getProductQuery);
   return result[0];
 };
+const getProductByCategory = async (category) => {
+  let getProductQuery = `SELECT * FROM products WHERE  category="${category}"`;
+  const db = await makeDb();
+  const products = await db.query(getProductQuery);
+  return products;
+};
 
 //createProduct management
 const createProduct = async (product, imageUrl) => {
@@ -111,4 +117,5 @@ module.exports = {
   getAllProducts,
   getProductById,
   isProductNewNess,
+  getProductByCategory,
 };

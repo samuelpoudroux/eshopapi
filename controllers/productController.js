@@ -5,6 +5,7 @@ const {
   getAllProducts,
   getProductById,
   isProductNewNess,
+  getProductByCategory,
 } = require("../repository/product");
 
 // Display list of all products.
@@ -26,6 +27,18 @@ exports.is_Product_NewNess = async (req, res) => {
     await isProductNewNess(id, newNess);
     res.status(200);
     res.send("ajout avec succés");
+  } catch (error) {
+    res.status("500");
+    res.send(`erreur lors de la récupération, ${error}`);
+  }
+};
+// Display list of all products.
+exports.product_By_Category = async (req, res) => {
+  try {
+    const { category } = req.params;
+    const products = await getProductByCategory(category);
+    res.status(200);
+    res.json(products);
   } catch (error) {
     res.status("500");
     res.send(`erreur lors de la récupération, ${error}`);

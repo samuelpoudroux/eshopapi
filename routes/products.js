@@ -25,5 +25,6 @@ router.post("/add", upload.single("upload"), product_Controller.product_create);
 router.delete("/:id/delete", product_Controller.product_delete);
 router.put("/:id/updateProduct", product_Controller.product_updateProduct);
 router.put("/isProductNewNess/:id", product_Controller.is_Product_NewNess);
+router.get("/category/:category", product_Controller.product_By_Category);
 
 module.exports = router;
