@@ -1,4 +1,4 @@
-const { login, register } = require("../repository/auth");
+const { login, register, getRole } = require("../repository/auth");
 
 exports.login = async (req, res) => {
   const { email, password } = req.body;

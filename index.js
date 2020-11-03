@@ -13,13 +13,10 @@ const server = app.listen(PORT);
 const bot = require("./socket");
 const io = require("socket.io")(server);
 var cors = require("cors");
-var cookieParser = require("cookie-parser");
 
-app.use(cookieParser());
 app.use(express.static(__dirname + "/public/productImages/"));
-
 var corsOptions = {
-  origin: "http://localhost:3000",
+  origin: process.env.FRONT_URL,
   credentials: true,
 };
 

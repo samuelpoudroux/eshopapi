@@ -27,8 +27,6 @@ const login = async (email, password) => {
         },
         ACCESS_TOKEN
       );
-      delete user[0].role;
-
       return {
         userData: user[0],
         accessToken,
@@ -82,4 +80,15 @@ const register = async (body) => {
   }
 };
 
-module.exports = { login, register };
+const getRole = async (id) => {
+  const db = await makeDb();
+  const getUserQueryByEmail = `SELECT * FROM users WHERE id= "${id}"`;
+  const user = await db.query(getUserQueryByEmail);
+  if (user && user.length > 0 && user[0] && user[0].role === "admin") {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+module.exports = { login, register, getRole };
