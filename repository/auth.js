@@ -50,6 +50,7 @@ const register = async (body) => {
       email,
       password,
       billsAddress,
+      dropAddress,
       phoneNumber,
     } = body;
     const hash = await bcrypt.hash(password, 10);
@@ -61,10 +62,11 @@ const register = async (body) => {
       email varchar(255)not null,
       password varchar(255)not null,
       billsAddress varchar(255)not null,
+      dropAddress varchar(255)not null,
       phoneNumber varchar(255)not null,
       role varchar(255)not null
   )`;
-    let insertUserQuery = `INSERT INTO users (firstName, lastName, email, password,billsAddress,phoneNumber,role) VALUES ('${firstName}','${lastName}','${email}','${hash}', '${billsAddress}','${phoneNumber}','user')`;
+    let insertUserQuery = `INSERT INTO users (firstName, lastName, email, password,billsAddress,dropAddress,phoneNumber,role) VALUES ('${firstName}','${lastName}','${email}','${hash}', '${billsAddress}','${dropAddress}','${phoneNumber}','user')`;
     const db = await makeDb();
     await db.query(createTableUserQuery);
     let getUserQuery = `SELECT * FROM users WHERE email="${email}"`;
