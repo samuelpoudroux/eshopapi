@@ -2,7 +2,8 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { validateRegisterInput } = require("../validation/register");
 const makeDb = require("./makeDb");
-const accessTokenSecret = "spwebTokenJeSuisIndechiffrable";
+
+const { ACCESS_TOKEN } = process.env;
 
 const login = async (email, password) => {
   try {
@@ -17,14 +18,21 @@ const login = async (email, password) => {
       if (!isValid) {
         return { error: "mot de passe ou identifiant incorrect" };
       }
-
+      delete user[0].password;
       const accessToken = jwt.sign(
-        { email: user[0].email, role: user[0].role },
-        accessTokenSecret
+        {
+          sub: user[0].id,
+          role: user[0].role,
+          exp: Math.floor(Date.now() / 1000) + 60 * 60,
+        },
+        ACCESS_TOKEN
       );
+      delete user[0].role;
+
       return {
-        ...user[0],
-        token: accessToken,
+        userData: user[0],
+        accessToken,
+        error: null,
       };
     }
   } catch (e) {
@@ -70,7 +78,7 @@ const register = async (body) => {
       return { errors: "utilisateur déjà existant" };
     }
   } catch (error) {
-    return error;
+    throw error;
   }
 };
 

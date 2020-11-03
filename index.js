@@ -13,18 +13,17 @@ const server = app.listen(PORT);
 const bot = require("./socket");
 const io = require("socket.io")(server);
 var cors = require("cors");
+var cookieParser = require("cookie-parser");
 
+app.use(cookieParser());
 app.use(express.static(__dirname + "/public/productImages/"));
 
-app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  next();
-});
-app.use(cors());
+var corsOptions = {
+  origin: "http://localhost:3000",
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));

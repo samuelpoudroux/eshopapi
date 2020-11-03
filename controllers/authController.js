@@ -2,14 +2,16 @@ const { login, register } = require("../repository/auth");
 
 exports.login = async (req, res) => {
   const { email, password } = req.body;
-  const access = await login(email, password);
-  const { error } = access;
+  const { userData, accessToken, error } = await login(email, password);
+
   if (error) {
-    res.json(access);
+    res.json(error);
     res.status("500");
   }
+
+  const user = { ...userData, jwt: accessToken };
+  res.json(user);
   res.status("200");
-  res.json(access);
 };
 
 exports.register = async (req, res) => {

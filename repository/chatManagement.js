@@ -52,7 +52,7 @@ const socketMessageManagement = (data, messages) => {
       messages.push({
         id: 0,
         firstName: "virtuel",
-        message: `Nous vous laissons donc découvrir notre site tranquillement, vous pouvez trouver nos coordonnées via le formulaire de contact. à bientôt spweb`,
+        message: `Nous restons à votre disposition à bientôt`,
       });
       return messages;
       break;
