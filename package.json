@@ -14,6 +14,7 @@
     "express-async-handler": "^1.1.4",
     "express-fileupload": "^1.2.0",
     "express-jwt": "^6.0.0",
+    "express-sslify": "^1.2.0",
     "handlebars": "^4.7.6",
     "joi": "^17.2.1",
     "joi-phone-number": "^5.0.0",

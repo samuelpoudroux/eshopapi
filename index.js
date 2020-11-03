@@ -9,11 +9,15 @@ var authRouter = require("./routes/auth");
 var categoryRouter = require("./routes/category");
 var contactRouter = require("./routes/contact");
 const PORT = process.env.PORT || "8080";
+var enforce = require("express-sslify");
+
 const server = app.listen(PORT);
 const bot = require("./socket");
 const io = require("socket.io")(server);
 var cors = require("cors");
 
+app.use(express.static(__dirname + "/public/productImages/"));
+process.env === "production" && app.use(enforce.HTTPS());
 app.use(express.static(__dirname + "/public/productImages/"));
 var corsOptions = {
   origin: process.env.FRONT_URL,
@@ -21,7 +25,6 @@ var corsOptions = {
 };
 
 app.use(cors(corsOptions));
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
