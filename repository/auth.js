@@ -10,7 +10,6 @@ const login = async (email, password) => {
     const db = await makeDb();
     const getUserQueryByEmail = `SELECT * FROM users WHERE email= "${email}"`;
     const user = await db.query(getUserQueryByEmail);
-
     if (user.length === 0) {
       return { error: "utilisateur inexistant" };
     } else if (user) {

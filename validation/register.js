@@ -36,6 +36,9 @@ const validateRegisterInput = async (data) => {
     errors.repeat_password = "adresse must have 6 chars";
   }
 
+  if (!Validator.isLength(data.billsAddress, { min: 3 })) {
+    errors.billsAddress = "adresse de facturation must have 6 chars";
+  }
   if (!Validator.isLength(data.dropAddress, { min: 3 })) {
     errors.dropAddress = "adresse de livraison must have 6 chars";
   }

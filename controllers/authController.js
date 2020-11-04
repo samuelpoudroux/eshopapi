@@ -2,14 +2,14 @@ const { login, register, getRole } = require("../repository/auth");
 
 exports.login = async (req, res) => {
   const { email, password } = req.body;
-  const { userData, accessToken, error } = await login(email, password);
+  const data = await login(email, password);
 
-  if (error) {
-    res.json(error);
+  if (data.error) {
+    res.json(data);
     res.status("500");
   }
 
-  const user = { ...userData, jwt: accessToken };
+  const user = data;
   res.json(user);
   res.status("200");
 };
