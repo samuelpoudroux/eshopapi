@@ -8,7 +8,7 @@ const wrapedSendMail = async (mailOptions) => {
   return new Promise((resolve, reject) => {
     transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
-        resolve({ errors: "erreur lors de l'envoie de l'email" }); // or use rejcet(false) but then you will have to handle errors
+        resolve({ errors: error }); // or use rejcet(false) but then you will have to handle errors
       } else {
         resolve({ message: "Email envoyé avec succés" });
       }
