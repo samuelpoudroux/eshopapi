@@ -26,6 +26,7 @@ const login = async (email, password) => {
         },
         ACCESS_TOKEN
       );
+      delete user[0].role;
       return {
         userData: user[0],
         accessToken,
@@ -60,8 +61,8 @@ const register = async (body) => {
       lastName varchar(255)not null,
       email varchar(255)not null,
       password varchar(255)not null,
-      billsAddress varchar(255)not null,
-      dropAddress varchar(255)not null,
+      billsAddress LONGTEXT not null,
+      dropAddress LONGTEXT not null,
       phoneNumber varchar(255)not null,
       role varchar(255)not null
   )`;
