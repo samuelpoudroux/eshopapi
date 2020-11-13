@@ -12,7 +12,21 @@ const storage = multer.diskStorage({
   },
 });
 
-var upload = multer({ storage: storage });
+var upload = multer({
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    if (
+      file.mimetype == "image/png" ||
+      file.mimetype == "image/jpg" ||
+      file.mimetype == "image/jpeg"
+    ) {
+      cb(null, true);
+    } else {
+      cb(null, false);
+      return cb(new Error("Only .png, .jpg and .jpeg format allowed!"));
+    }
+  },
+});
 
 // Require controller modules.
 var product_Controller = require("../controllers/productController");
@@ -23,10 +37,12 @@ const authorize = require("../middleware/authorize");
 // GET ALL PRODUCTS.
 router.get("/", product_Controller.product_list);
 router.get("/:id", product_Controller.product_detail);
+router.get("/images/:id", product_Controller.product_images_url);
 router.get("/category/:category", product_Controller.product_By_Category);
 
 router.post("/add", authorize([Role.Admin]));
-router.post("/add", upload.single("upload"), product_Controller.product_create);
+router.post("/add", upload.array("upload"), product_Controller.product_create);
+// router.post("/add",(req, res) => {upload(req, res) => (err)  } );
 router.delete(
   "/:id/delete",
   authorize([Role.Admin]),

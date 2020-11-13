@@ -27,6 +27,7 @@ const login = async (email, password) => {
         ACCESS_TOKEN
       );
       delete user[0].role;
+      db.close();
       return {
         userData: user[0],
         accessToken,
@@ -73,8 +74,10 @@ const register = async (body) => {
     const users = await db.query(getUserQuery);
     if (users.length === 0) {
       await db.query(insertUserQuery);
+      db.close();
       return { message: "Utilisateur enregistré avec succés" };
     } else {
+      db.close();
       return { errors: "utilisateur déjà existant" };
     }
   } catch (error) {
@@ -86,6 +89,7 @@ const getRole = async (id) => {
   const db = await makeDb();
   const getUserQueryByEmail = `SELECT * FROM users WHERE id= "${id}"`;
   const user = await db.query(getUserQueryByEmail);
+  db.close();
   if (user && user.length > 0 && user[0] && user[0].role === "admin") {
     return true;
   } else {

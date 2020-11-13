@@ -7,7 +7,7 @@ const buildGlobalSearchResult = async () => {
   // nous transformons le tableau ci dessous en tableau de promesse par flatmap
   const promises = collectionsListArray.flatMap(async (collection) => {
     const tableIn = collection[`Tables_in_${process.env.DATABASE}`];
-    if (tableIn !== "users") {
+    if (tableIn !== "users" && tableIn !== "imagesurl") {
       const query = `SELECT * FROM ${tableIn}`;
       return [tableIn, await db.query(query)];
     } else {

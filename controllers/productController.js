@@ -6,6 +6,7 @@ const {
   getProductById,
   isProductNewNess,
   getProductByCategory,
+  getImagesProduct,
 } = require("../repository/product");
 
 // Display list of all products.
@@ -61,21 +62,34 @@ exports.product_detail = async (req, res) => {
 // Handle product createProduct on POST.
 exports.product_create = async (req, res, next) => {
   const { body } = req;
-  const imageUrl = req.file ? `${process.env.URL + req.file.filename}` : null;
+  const imagesUrl = req.files
+    ? req.files.map((file) => `${process.env.URL + file.originalname}`)
+    : null;
   try {
-    const product = await createProduct(body, imageUrl);
+    const product = await createProduct(body, imagesUrl);
     const { error } = product;
     if (!error) {
       res.status("200");
       res.json(product);
     } else {
-      console.log("error", error);
       res.json(product);
       res.status("400");
     }
   } catch (error) {
     res.status("500");
     res.send(`erreur lors de la création, ${error}`);
+  }
+};
+// Handle product createProduct on POST.
+exports.product_images_url = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const imagesUrl = await getImagesProduct(id);
+    res.status("200");
+    res.json(imagesUrl);
+  } catch (error) {
+    res.status("500");
+    res.send(`erreur lors de la récupération d'images du produits, ${error}`);
   }
 };
 

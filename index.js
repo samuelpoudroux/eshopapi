@@ -17,6 +17,7 @@ const io = require("socket.io")(server);
 var cors = require("cors");
 
 app.use(express.static(__dirname + "/public/productImages/"));
+app.use(express.static(__dirname + "/public/categoryImages/"));
 process.env === "production" && app.use(enforce.HTTPS());
 app.use(express.static(__dirname + "/public/productImages/"));
 var corsOptions = {
