@@ -3,7 +3,8 @@ const { v4: uuidv4 } = require("uuid");
 // getManagement
 const getAllProducts = async () => {
   let createTableProductQuery = `create table if not exists products(
-    id int primary key,
+    id int primary key auto_increment,
+    uid varchar(255),
     name varchar(255)not null,
     productPrice int not null,
     category varchar(255)not null,
