@@ -9,8 +9,8 @@ const getAllProducts = async () => {
     productPrice int not null,
     category varchar(255)not null,
     inStock boolean not null,
-    shortDescription varchar(255)not null,,
-    longDescription varchar(255)not null,,
+    shortDescription varchar(255)not null,
+    longDescription varchar(255)not null,
     newNess boolean
 )`;
 
@@ -65,9 +65,7 @@ const createProduct = async (product, imagesUrl) => {
         longDescription varchar(255)not null,
         newNess boolean)`;
 
-      let insertProductQuery = `INSERT INTO products (name, uid, productPrice, category, inStock, shortDescription, longDescription, newNess) VALUES ('${name}','${productId}','${productPrice}','${category}',${inStock},'${
-        shortDescription ? shortDescription : null
-      }', '${longDescription ? longDescription : null}', ${
+      let insertProductQuery = `INSERT INTO products (name, uid, productPrice, category, inStock, shortDescription, longDescription, newNess) VALUES ('${name}','${productId}','${productPrice}','${category}',${inStock},'${shortDescription}', '${longDescription}', ${
         newNess === "true" ? newNess : "false"
       })`;
 
@@ -81,6 +79,7 @@ const createProduct = async (product, imagesUrl) => {
       await db.query(createTableProductQuery);
       await db.query(createImagesUrlTableQuery);
       await db.query(insertProductQuery);
+      console.log(imagesUrl);
       imagesUrl &&
         imagesUrl.length > 0 &&
         (await Promise.all(
