@@ -62,8 +62,8 @@ const register = async (body) => {
       lastName varchar(255)not null,
       email varchar(255)not null,
       password varchar(255)not null,
-      billsAddress LONGTEXT not null,
-      dropAddress LONGTEXT not null,
+      billsAddress longtext not null,
+      dropAddress longtext not null,
       phoneNumber varchar(255)not null,
       role varchar(255)not null
   )`;
