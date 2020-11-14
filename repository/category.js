@@ -30,7 +30,6 @@ const createCategory = async (req, res, next) => {
 
     let getCategoryQuery = `SELECT * FROM categories WHERE name="${body.name}"`;
     const categories = await db.query(getCategoryQuery);
-    console.log(categories);
     if (categories.length === 0) {
       await db.query(insertCategoryQuery);
       db.close();
@@ -40,12 +39,20 @@ const createCategory = async (req, res, next) => {
       return { errors: "catégorie déjà existante" };
     }
   } catch (error) {
-    console.log(error);
     throw error;
   }
+};
+
+const getCategoryById = async (id) => {
+  let getCategoryQuery = `SELECT * FROM categories WHERE  id="${id}"`;
+  const db = await makeDb();
+  const result = await db.query(getCategoryQuery);
+  db.close();
+  return result[0];
 };
 
 module.exports = {
   getAllCategories,
   createCategory,
+  getCategoryById,
 };

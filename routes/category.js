@@ -35,6 +35,7 @@ const authorize = require("../middleware/authorize");
 /// category CONTROLLER ///
 
 router.get("/", categoryController.categories_list);
+router.get("/:id", categoryController.category_detail);
 router.post("/create", authorize([Role.Admin]));
 router.post(
   "/create",
