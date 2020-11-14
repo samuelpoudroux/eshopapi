@@ -9,8 +9,8 @@ const getAllProducts = async () => {
     productPrice int not null,
     category varchar(255)not null,
     inStock boolean not null,
-    shortDescription varchar(255),
-    longDescription varchar(255),
+    shortDescription varchar(255)not null,,
+    longDescription varchar(255)not null,,
     newNess boolean
 )`;
 
@@ -61,8 +61,8 @@ const createProduct = async (product, imagesUrl) => {
         productPrice int not null,
         category varchar(255)not null,
         inStock boolean not null,
-        shortDescription varchar(255),
-        longDescription varchar(255),
+        shortDescription varchar(255)not null,
+        longDescription varchar(255)not null,
         newNess boolean)`;
 
       let insertProductQuery = `INSERT INTO products (name, uid, productPrice, category, inStock, shortDescription, longDescription, newNess) VALUES ('${name}','${productId}','${productPrice}','${category}',${inStock},'${
