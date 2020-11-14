@@ -55,16 +55,15 @@ const createProduct = async (product, imagesUrl) => {
       return { error: "vérifier les champs obligatoires" };
     } else {
       let createTableProductQuery = `create table if not exists products(
-                          id int primary key auto_increment,
-                          uid varchar(255),
-                          name varchar(255)not null,
-                          productPrice int not null,
-                          category varchar(255)not null,
-                          inStock boolean not null,
-                          shortDescription varchar(255),
-                          longDescription varchar(255),
-                          newNess boolean
-                      )`;
+        id int primary key auto_increment,
+        uid varchar(255),
+        name varchar(255)not null,
+        productPrice int not null,
+        category varchar(255)not null,
+        inStock boolean not null,
+        shortDescription varchar(255),
+        longDescription varchar(255),
+        newNess boolean)`;
 
       let insertProductQuery = `INSERT INTO products (name, uid, productPrice, category, inStock, shortDescription, longDescription, newNess) VALUES ('${name}','${productId}','${productPrice}','${category}',${inStock},'${
         shortDescription ? shortDescription : null
