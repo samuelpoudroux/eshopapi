@@ -49,7 +49,7 @@ router.delete(
   product_Controller.product_delete
 );
 router.put(
-  "/:id/updateProduct",
+  "/:id",
   authorize([Role.Admin]),
   product_Controller.product_updateProduct
 );

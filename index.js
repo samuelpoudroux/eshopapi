@@ -8,6 +8,7 @@ var globalSearchRouter = require("./routes/globalSearch");
 var authRouter = require("./routes/auth");
 var categoryRouter = require("./routes/category");
 var contactRouter = require("./routes/contact");
+var userRouter = require("./routes/user");
 const PORT = process.env.PORT || "8080";
 var enforce = require("express-sslify");
 
@@ -24,7 +25,6 @@ var corsOptions = {
   origin: process.env.FRONT_URL,
   credentials: true,
 };
-
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -35,6 +35,7 @@ app.use("/globalSearch", globalSearchRouter);
 app.use("/auth", authRouter);
 app.use("/categories", categoryRouter);
 app.use("/contact", contactRouter);
+app.use("/user", userRouter);
 
 //listen on every connection
 io.on("connection", (socket) => bot(socket, io));

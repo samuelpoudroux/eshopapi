@@ -79,7 +79,6 @@ const createProduct = async (product, imagesUrl) => {
       await db.query(createTableProductQuery);
       await db.query(createImagesUrlTableQuery);
       await db.query(insertProductQuery);
-      console.log(imagesUrl);
       imagesUrl &&
         imagesUrl.length > 0 &&
         (await Promise.all(
