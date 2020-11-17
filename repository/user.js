@@ -10,6 +10,7 @@ const getUserById = async (id, reset = false) => {
     if (!reset) {
       delete users[0].password;
     }
+    db.close();
     return users[0];
   } catch (error) {
     throw error;
@@ -29,6 +30,7 @@ const resetPassword = async (body, id) => {
       const hash = await bcrypt.hash(newPassword, 10);
       let updatePasswordQuery = `UPDATE users SET  password= '${hash}' WHERE id=${id}`;
       await db.query(updatePasswordQuery);
+      db.close();
       return "Mot de passe modifié avec succés";
     }
   } catch (error) {
@@ -50,6 +52,7 @@ const updateUser = async (body, id) => {
     const dataQuery = await getDataToUpdate();
     let updateUserQuery = `UPDATE users SET ${dataQuery} WHERE id=${id}`;
     await db.query(updateUserQuery);
+    db.close();
   } catch (error) {
     throw error;
   }
