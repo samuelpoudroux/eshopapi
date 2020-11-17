@@ -3,6 +3,7 @@ const {
   getOngoingOrdersByUserId,
   getHistoryOrdersByUserId,
   getProducts,
+  alterName,
   create,
 } = require("../repository/order");
 
@@ -51,6 +52,18 @@ exports.create = async (req, res) => {
     const order = await create(body);
     res.status("200");
     res.json(order);
+  } catch (error) {
+    res.status("500");
+    res.send(`erreur lors de votre commande, ${error}`);
+  }
+};
+exports.alterOrderName = async (req, res) => {
+  try {
+    const { body } = req;
+    const { id } = req.params;
+    const response = await alterName(id, body.name);
+    res.status("200");
+    res.json(response);
   } catch (error) {
     res.status("500");
     res.send(`erreur lors de votre commande, ${error}`);

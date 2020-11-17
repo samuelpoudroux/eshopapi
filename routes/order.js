@@ -7,6 +7,7 @@ var order = require("../controllers/orderController");
 router.get("/", order.list);
 router.get("/ongoingOrders/:userId", order.detailOngoingOrders);
 router.get("/historyOrders/:userId", order.detailHistoryOrders);
+router.put("/:id", order.alterOrderName);
 router.post("/:userId", order.create);
 
 module.exports = router;

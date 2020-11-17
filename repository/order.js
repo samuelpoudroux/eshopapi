@@ -34,11 +34,23 @@ const getHistoryOrdersByUserId = async (userId) => {
     throw error;
   }
 };
+const alterName = async (id, name) => {
+  try {
+    const db = await makeDb();
+    let modifyOrderNameQuery = `UPDATE orders SET  name= '${name}' WHERE id=${id}`;
+    await db.query(modifyOrderNameQuery);
+    db.close();
+    return "Commande modifiée avec succés";
+  } catch (error) {
+    throw error;
+  }
+};
 
 const create = async (body) => {
   try {
     let createTableOrderQuery = `create table if not exists orders(
         id int primary key auto_increment,
+        name varchar(255),
         products longtext not null,
         userId int not null,
         orderDate datetime not null,
@@ -71,5 +83,6 @@ module.exports = {
   getOrders,
   getHistoryOrdersByUserId,
   getOngoingOrdersByUserId,
+  alterName,
   create,
 };
