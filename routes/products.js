@@ -37,12 +37,12 @@ const authorize = require("../middleware/authorize");
 // GET ALL PRODUCTS.
 router.get("/", product_Controller.product_list);
 router.get("/:id", product_Controller.product_detail);
+router.get("/stockNumber/:id", product_Controller.stockNumber);
 router.get("/images/:id", product_Controller.product_images_url);
 router.get("/category/:category", product_Controller.product_By_Category);
 
 router.post("/add", authorize([Role.Admin]));
 router.post("/add", upload.array("upload"), product_Controller.product_create);
-// router.post("/add",(req, res) => {upload(req, res) => (err)  } );
 router.delete(
   "/:id/delete",
   authorize([Role.Admin]),

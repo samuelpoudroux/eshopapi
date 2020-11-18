@@ -7,8 +7,8 @@ const getAllProducts = async () => {
     uid varchar(255),
     name varchar(255)not null,
     productPrice int not null,
+    stockNumber int not null,
     category varchar(255)not null,
-    inStock boolean not null,
     shortDescription varchar(255)not null,
     longDescription varchar(255)not null,
     newNess boolean
@@ -48,24 +48,25 @@ const createProduct = async (product, imagesUrl) => {
       shortDescription,
       longDescription,
       newNess,
+      stockNumber,
     } = product;
 
     const productId = uuidv4();
-    if (!name || !productPrice || !category || !inStock) {
-      return { error: "vérifier les champs obligatoires" };
+    if (!name || !productPrice || !category || !stockNumber) {
+      throw "vérifier les champs obligatoires";
     } else {
       let createTableProductQuery = `create table if not exists products(
         id int primary key auto_increment,
         uid varchar(255),
         name varchar(255)not null,
         productPrice int not null,
+        stockNumber int not null,
         category varchar(255)not null,
-        inStock boolean not null,
         shortDescription varchar(255)not null,
         longDescription varchar(255)not null,
         newNess boolean)`;
 
-      let insertProductQuery = `INSERT INTO products (name, uid, productPrice, category, inStock, shortDescription, longDescription, newNess) VALUES ('${name}','${productId}','${productPrice}','${category}',${inStock},'${shortDescription}', '${longDescription}', ${
+      let insertProductQuery = `INSERT INTO products (name, uid, productPrice, stockNumber, category, shortDescription, longDescription, newNess) VALUES ('${name}','${productId}','${productPrice}','${stockNumber}','${category}','${shortDescription}', '${longDescription}', ${
         newNess === "true" ? newNess : "false"
       })`;
 
@@ -88,7 +89,7 @@ const createProduct = async (product, imagesUrl) => {
           })
         ));
       db.close();
-      return { message: "enregistré avec succés" };
+      return "enregistré avec succés";
     }
   } catch (error) {
     throw error;
@@ -141,6 +142,29 @@ const getImagesProduct = async (productId) => {
   }
 };
 
+const getProductsById = async (id) => {
+  try {
+    const db = await makeDb();
+    let getProductByIdQuery = `SELECT *  FROM products  WHERE id = ${id}`;
+    const products = await db.query(getProductByIdQuery);
+    db.close();
+    return products[0];
+  } catch (error) {
+    throw error;
+  }
+};
+const getStockNumber = async (id) => {
+  try {
+    const db = await makeDb();
+    let getProductByIdQuery = `SELECT stockNumber  FROM products  WHERE id = ${id}`;
+    const num = await db.query(getProductByIdQuery);
+    db.close();
+    return num[0].stockNumber;
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   createProduct,
   updateProduct,
@@ -150,4 +174,6 @@ module.exports = {
   isProductNewNess,
   getProductByCategory,
   getImagesProduct,
+  getProductsById,
+  getStockNumber,
 };

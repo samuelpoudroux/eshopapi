@@ -1,4 +1,6 @@
 const makeDb = require("./makeDb");
+const product = require("./product");
+const { getProductsById } = require("./product");
 
 const getOrders = async () => {
   try {
@@ -12,11 +14,27 @@ const getOrders = async () => {
   }
 };
 
+const buildOrdersWithAllProducts = async (order) => {
+  let { products } = order;
+
+  order.products = await Promise.all(
+    JSON.parse(products).map(async (product) => {
+      return { ...(await getProductsById(product.id)), num: product.num };
+    })
+  );
+  return order;
+};
+
 const getOngoingOrdersByUserId = async (userId) => {
   try {
     const db = await makeDb();
     let getOrdersQuery = `SELECT *  FROM orders WHERE (userId LIKE '%${userId}%') AND (status LIKE '%ongoing%')`;
-    const orders = await db.query(getOrdersQuery);
+    let orders = await db.query(getOrdersQuery);
+    await Promise.all(
+      orders.map(async (order) => {
+        return await buildOrdersWithAllProducts(order);
+      })
+    );
     db.close();
     return orders;
   } catch (error) {
@@ -28,6 +46,11 @@ const getHistoryOrdersByUserId = async (userId) => {
     const db = await makeDb();
     let getOrdersQuery = `SELECT *  FROM orders WHERE (userId LIKE '%${userId}%') AND (status LIKE '%finished%')`;
     const orders = await db.query(getOrdersQuery);
+    await Promise.all(
+      orders.map(async (order) => {
+        return await buildOrdersWithAllProducts(order);
+      })
+    );
     db.close();
     return orders;
   } catch (error) {

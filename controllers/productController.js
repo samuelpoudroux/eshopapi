@@ -7,6 +7,7 @@ const {
   isProductNewNess,
   getProductByCategory,
   getImagesProduct,
+  getStockNumber,
 } = require("../repository/product");
 
 // Display list of all products.
@@ -59,6 +60,21 @@ exports.product_detail = async (req, res) => {
   }
 };
 
+exports.stockNumber = async (req, res) => {
+  console.log("toto");
+  try {
+    const { id } = req.params;
+    const num = await getStockNumber(id);
+    res.status("200");
+    res.json(num);
+  } catch (error) {
+    res.status("500");
+    res.send(
+      `erreur lors de la récupération des produits disponibles, ${error}`
+    );
+  }
+};
+
 // Handle product createProduct on POST.
 exports.product_create = async (req, res, next) => {
   const { body } = req;
@@ -67,14 +83,8 @@ exports.product_create = async (req, res, next) => {
     : null;
   try {
     const product = await createProduct(body, imagesUrl);
-    const { error } = product;
-    if (!error) {
-      res.status("200");
-      res.json(product);
-    } else {
-      res.json(product);
-      res.status("400");
-    }
+    res.status("200");
+    res.json(product);
   } catch (error) {
     res.status("500");
     res.send(`erreur lors de la création, ${error}`);
