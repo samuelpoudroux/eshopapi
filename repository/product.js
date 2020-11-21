@@ -2,20 +2,7 @@ const makeDb = require("./makeDb");
 const { v4: uuidv4 } = require("uuid");
 // getManagement
 const getAllProducts = async () => {
-  let createTableProductQuery = `create table if not exists products(
-    id int primary key auto_increment,
-    uid varchar(255),
-    name varchar(255)not null,
-    productPrice int not null,
-    stockNumber int not null,
-    category varchar(255)not null,
-    shortDescription varchar(255)not null,
-    longDescription varchar(255)not null,
-    newNess boolean
-)`;
-
   const db = await makeDb();
-  await db.query(createTableProductQuery);
   let getProductsQuery = "SELECT * FROM products";
   const results = await db.query(getProductsQuery);
   db.close();
@@ -45,10 +32,11 @@ const createProduct = async (product, imagesUrl) => {
       productPrice,
       category,
       inStock,
-      shortDescription,
-      longDescription,
+      description,
       newNess,
       stockNumber,
+      advice,
+      formule,
     } = product;
 
     const productId = uuidv4();
@@ -62,13 +50,14 @@ const createProduct = async (product, imagesUrl) => {
         productPrice int not null,
         stockNumber int not null,
         category varchar(255)not null,
-        shortDescription varchar(255)not null,
-        longDescription varchar(255)not null,
+        description longtext not null,
+        formule longtext not null,
+        advice longtext,
         newNess boolean)`;
 
-      let insertProductQuery = `INSERT INTO products (name, uid, productPrice, stockNumber, category, shortDescription, longDescription, newNess) VALUES ('${name}','${productId}','${productPrice}','${stockNumber}','${category}','${shortDescription}', '${longDescription}', ${
-        newNess === "true" ? newNess : "false"
-      })`;
+      let insertProductQuery = `INSERT INTO products (name, uid, productPrice, stockNumber, category, description, formule, advice, newNess) VALUES ('${name}','${productId}','${productPrice}','${stockNumber}','${category}','${description}','${formule}', '${
+        advice ? advice : null
+      }', ${newNess === "true" ? newNess : "false"})`;
 
       let createImagesUrlTableQuery = `create table if not exists imagesUrl(
         id int primary key auto_increment,
@@ -153,13 +142,16 @@ const getProductsById = async (id) => {
     throw error;
   }
 };
-const getStockNumber = async (id) => {
+const getStockNumber = async (uid) => {
   try {
     const db = await makeDb();
-    let getProductByIdQuery = `SELECT stockNumber  FROM products  WHERE id = ${id}`;
+    let getProductByIdQuery = `SELECT stockNumber  FROM products  WHERE uid = '${uid}'`;
     const num = await db.query(getProductByIdQuery);
     db.close();
-    return num[0].stockNumber;
+
+    if (num.length > 0) {
+      return num[0].stockNumber;
+    }
   } catch (error) {
     throw error;
   }

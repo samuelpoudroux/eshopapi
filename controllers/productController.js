@@ -61,10 +61,9 @@ exports.product_detail = async (req, res) => {
 };
 
 exports.stockNumber = async (req, res) => {
-  console.log("toto");
   try {
-    const { id } = req.params;
-    const num = await getStockNumber(id);
+    const { uid } = req.params;
+    const num = await getStockNumber(uid);
     res.status("200");
     res.json(num);
   } catch (error) {

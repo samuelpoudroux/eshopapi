@@ -37,7 +37,7 @@ const authorize = require("../middleware/authorize");
 // GET ALL PRODUCTS.
 router.get("/", product_Controller.product_list);
 router.get("/:id", product_Controller.product_detail);
-router.get("/stockNumber/:id", product_Controller.stockNumber);
+router.get("/stockNumber/:uid", product_Controller.stockNumber);
 router.get("/images/:id", product_Controller.product_images_url);
 router.get("/category/:category", product_Controller.product_By_Category);
 
