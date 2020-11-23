@@ -8,6 +8,8 @@ const {
   getProductByCategory,
   getImagesProduct,
   getStockNumber,
+  createProductNotation,
+  getProductNotations,
 } = require("../repository/product");
 
 // Display list of all products.
@@ -25,8 +27,8 @@ exports.product_list = async (req, res) => {
 exports.is_Product_NewNess = async (req, res) => {
   try {
     const { newNess } = req.body;
-    const { id } = req.params;
-    await isProductNewNess(id, newNess);
+    const { uid } = req.params;
+    await isProductNewNess(uid, newNess);
     res.status(200);
     res.send("ajout avec succés");
   } catch (error) {
@@ -50,8 +52,8 @@ exports.product_By_Category = async (req, res) => {
 // Display detail page for a specific product.
 exports.product_detail = async (req, res) => {
   try {
-    const { id } = req.params;
-    const product = await getProductById(id);
+    const { uid } = req.params;
+    const product = await getProductById(uid);
     res.status("200");
     res.json(product);
   } catch (error) {
@@ -131,5 +133,41 @@ exports.product_delete = async (req, res) => {
   } catch (error) {
     res.status("500");
     res.send(`erreur lors de la suppression, ${error}`);
+  }
+};
+
+exports.create_product_notation = async (req, res) => {
+  const { userId, productId } = req.params;
+  const { comment, note, notationDate } = req.body;
+  try {
+    const response = await createProductNotation(
+      userId,
+      productId,
+      note,
+      comment,
+      notationDate
+    );
+    const { errors } = response;
+    if (errors) {
+      res.json(response);
+      res.status("400");
+    } else {
+      res.status("200");
+      res.json(response);
+    }
+  } catch (error) {
+    res.status("500");
+    res.send(error);
+  }
+};
+exports.get_product_notations = async (req, res) => {
+  const { productId } = req.params;
+  try {
+    const notations = await getProductNotations(productId);
+    res.status("200");
+    res.json(notations);
+  } catch (error) {
+    res.status("500");
+    res.send(`erreur lors de la notation, ${error}`);
   }
 };

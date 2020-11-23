@@ -36,13 +36,18 @@ const authorize = require("../middleware/authorize");
 
 // GET ALL PRODUCTS.
 router.get("/", product_Controller.product_list);
-router.get("/:id", product_Controller.product_detail);
+router.get("/:uid", product_Controller.product_detail);
 router.get("/stockNumber/:uid", product_Controller.stockNumber);
 router.get("/images/:id", product_Controller.product_images_url);
 router.get("/category/:category", product_Controller.product_By_Category);
 
 router.post("/add", authorize([Role.Admin]));
 router.post("/add", upload.array("upload"), product_Controller.product_create);
+router.post(
+  "/notation/:userId/:productId",
+  product_Controller.create_product_notation
+);
+router.get("/notation/:productId", product_Controller.get_product_notations);
 router.delete(
   "/:id/delete",
   authorize([Role.Admin]),
@@ -54,7 +59,7 @@ router.put(
   product_Controller.product_updateProduct
 );
 router.put(
-  "/isProductNewNess/:id",
+  "/isProductNewNess/uid",
   authorize([Role.Admin]),
   product_Controller.is_Product_NewNess
 );
