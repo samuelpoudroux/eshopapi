@@ -1,4 +1,5 @@
 const makeDb = require("./makeDb");
+const product = require("./product");
 const {
   getProductById,
   getStockNumber,
@@ -19,6 +20,7 @@ const getOrders = async () => {
 
 const buildOrdersWithAllProducts = async (order) => {
   let { products } = order;
+
   order.products = await Promise.all(
     JSON.parse(products).map(async (product) => {
       const productDetails = await getProductById(product.uid);
@@ -71,26 +73,37 @@ const alterName = async (id, name) => {
     throw error;
   }
 };
-const getDataToInsertQuery = async (body) => {
-  const dataToInsertArrayValues = [];
-  const dataToInsertArrayKeys = [];
-  for (const [key, value] of Object.entries(body)) {
-    if (key === "products") {
-      await Promise.all(
-        JSON.parse(value).map(async (product) => {
-          const stockNumber = await getStockNumber(product.uid);
-          await updateProductStockNumber(product.uid, stockNumber, product.num);
-        })
-      );
-    }
 
-    dataToInsertArrayKeys.push(key);
-    dataToInsertArrayValues.push(`${JSON.stringify(value)}`);
+const getDataToInsertQuery = async (body) => {
+  try {
+    const dataToInsertArrayValues = [];
+    const dataToInsertArrayKeys = [];
+    for (const [key, value] of Object.entries(body)) {
+      if (key === "products") {
+        const products = Object.keys(value).map(function (key) {
+          return value[key];
+        });
+        await Promise.all(
+          products.map(async (product) => {
+            const stockNumber = await getStockNumber(product.uid);
+            await updateProductStockNumber(
+              product.uid,
+              stockNumber,
+              product.num
+            );
+          })
+        );
+      }
+      dataToInsertArrayValues.push(`'${value}'`);
+      dataToInsertArrayKeys.push(key);
+    }
+    const keys = dataToInsertArrayKeys.join();
+    return { keys, dataToInsertArrayValues };
+  } catch (error) {
+    console.log("getDataToInsertQuery", error);
   }
-  const keys = dataToInsertArrayKeys.join();
-  const values = dataToInsertArrayValues.join();
-  return { keys, values };
 };
+
 const create = async (body) => {
   try {
     let createTableOrderQuery = `create table if not exists orders(
@@ -104,11 +117,12 @@ const create = async (body) => {
     const db = await makeDb();
     await db.query(createTableOrderQuery);
     const keysAndValues = await getDataToInsertQuery(body);
-    let insertOrderQuery = `INSERT INTO orders (${keysAndValues.keys}) VALUES (${keysAndValues.values})`;
+    let insertOrderQuery = `INSERT INTO orders (${keysAndValues.keys}) VALUES (${keysAndValues.dataToInsertArrayValues})`;
     await db.query(insertOrderQuery);
     db.close();
     return "Commande validée";
   } catch (error) {
+    console.log("create", error);
     throw error;
   }
 };

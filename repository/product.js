@@ -23,9 +23,8 @@ const getProductById = async (uid) => {
 const updateProductStockNumber = async (productId, stockNumber, num) => {
   try {
     const db = await makeDb();
-    let updateProductQuery = `UPDATE products set stockNumber=${
-      stockNumber - num
-    } WHERE uid="${productId}"`;
+    const stockUpdated = stockNumber - num === 0 ? 0 : stockNumber - num;
+    let updateProductQuery = `UPDATE products set stockNumber=${stockUpdated} WHERE uid="${productId}"`;
     await db.query(updateProductQuery);
     await db.close();
   } catch (error) {
