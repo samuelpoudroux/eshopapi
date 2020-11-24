@@ -19,6 +19,19 @@ const getProductById = async (uid) => {
   db.close();
   return product[0];
 };
+
+const updateProductStockNumber = async (productId, stockNumber, num) => {
+  try {
+    const db = await makeDb();
+    let updateProductQuery = `UPDATE products set stockNumber=${
+      stockNumber - num
+    } WHERE uid="${productId}"`;
+    await db.query(updateProductQuery);
+    await db.close();
+  } catch (error) {
+    throw error;
+  }
+};
 const getProductByCategory = async (category) => {
   let getProductQuery = `SELECT * FROM products WHERE  category="${category}"`;
   const db = await makeDb();
@@ -266,4 +279,5 @@ module.exports = {
   getStockNumber,
   createProductNotation,
   getProductNotations,
+  updateProductStockNumber,
 };

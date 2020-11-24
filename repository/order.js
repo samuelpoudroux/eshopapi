@@ -1,6 +1,9 @@
 const makeDb = require("./makeDb");
-const product = require("./product");
-const { getProductById } = require("./product");
+const {
+  getProductById,
+  getStockNumber,
+  updateProductStockNumber,
+} = require("./product");
 
 const getOrders = async () => {
   try {
@@ -16,7 +19,6 @@ const getOrders = async () => {
 
 const buildOrdersWithAllProducts = async (order) => {
   let { products } = order;
-
   order.products = await Promise.all(
     JSON.parse(products).map(async (product) => {
       const productDetails = await getProductById(product.uid);
@@ -69,7 +71,26 @@ const alterName = async (id, name) => {
     throw error;
   }
 };
+const getDataToInsertQuery = async () => {
+  const dataToInsertArrayValues = [];
+  const dataToInsertArrayKeys = [];
+  for (const [key, value] of Object.entries(body)) {
+    if (key === "products") {
+      await Promise.all(
+        JSON.parse(value).map(async (product) => {
+          const stockNumber = await getStockNumber(product.uid);
+          await updateProductStockNumber(product.uid, stockNumber, product.num);
+        })
+      );
+    }
 
+    dataToInsertArrayKeys.push(key);
+    dataToInsertArrayValues.push(`${JSON.stringify(value)}`);
+  }
+  const keys = dataToInsertArrayKeys.join();
+  const values = dataToInsertArrayValues.join();
+  return { keys, values };
+};
 const create = async (body) => {
   try {
     let createTableOrderQuery = `create table if not exists orders(
@@ -82,18 +103,7 @@ const create = async (body) => {
     )`;
     const db = await makeDb();
     await db.query(createTableOrderQuery);
-    const getDataToInsert = async () => {
-      const dataToInsertArrayValues = [];
-      const dataToInsertArrayKeys = [];
-      for (const [key, value] of Object.entries(body)) {
-        dataToInsertArrayKeys.push(key);
-        dataToInsertArrayValues.push(`'${value}'`);
-      }
-      const keys = dataToInsertArrayKeys.join();
-      const values = dataToInsertArrayValues.join();
-      return { keys, values };
-    };
-    const keysAndValues = await getDataToInsert();
+    const keysAndValues = await getDataToInsertQuery();
     let insertOrderQuery = `INSERT INTO orders (${keysAndValues.keys}) VALUES (${keysAndValues.values})`;
     await db.query(insertOrderQuery);
     db.close();
