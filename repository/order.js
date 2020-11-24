@@ -93,8 +93,10 @@ const getDataToInsertQuery = async (body) => {
             );
           })
         );
+        dataToInsertArrayValues.push(`'${JSON.stringify(value)}'`);
+      } else {
+        dataToInsertArrayValues.push(`'${value}'`);
       }
-      dataToInsertArrayValues.push(`'${value}'`);
       dataToInsertArrayKeys.push(key);
     }
     const keys = dataToInsertArrayKeys.join();

@@ -162,20 +162,22 @@ const getStockNumber = async (uid) => {
 };
 
 const checkProductEverOrdered = async (db, userId, productId) => {
-  const userOrdersQuery = `SELECT * FROM orders WHERE userId="${userId}"`;
-  const orders = await db.query(userOrdersQuery);
-  const allProductsOrdered = orders.flatMap((product) =>
-    JSON.parse(product.products)
-  );
-
-  const productEverOrdered = allProductsOrdered.find(
-    (e) => e.uid === productId
-  );
-
-  if (productEverOrdered) {
-    return true;
-  } else {
-    return false;
+  try {
+    const userOrdersQuery = `SELECT * FROM orders WHERE userId="${userId}"`;
+    const orders = await db.query(userOrdersQuery);
+    const allProductsOrdered = orders.flatMap((product) =>
+      JSON.parse(product.products)
+    );
+    const productEverOrdered = allProductsOrdered.find(
+      (e) => e.uid === productId
+    );
+    if (productEverOrdered) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.log("checkProductEverOrdered", error);
   }
 };
 
@@ -221,9 +223,11 @@ const createProductNotation = async (
       };
     }
   } catch (error) {
+    console.log(error);
     throw error;
   }
 };
+
 const getProductNotations = async (productId) => {
   try {
     const db = await makeDb();
