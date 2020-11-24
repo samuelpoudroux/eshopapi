@@ -71,7 +71,7 @@ const alterName = async (id, name) => {
     throw error;
   }
 };
-const getDataToInsertQuery = async () => {
+const getDataToInsertQuery = async (body) => {
   const dataToInsertArrayValues = [];
   const dataToInsertArrayKeys = [];
   for (const [key, value] of Object.entries(body)) {
@@ -103,7 +103,7 @@ const create = async (body) => {
     )`;
     const db = await makeDb();
     await db.query(createTableOrderQuery);
-    const keysAndValues = await getDataToInsertQuery();
+    const keysAndValues = await getDataToInsertQuery(body);
     let insertOrderQuery = `INSERT INTO orders (${keysAndValues.keys}) VALUES (${keysAndValues.values})`;
     await db.query(insertOrderQuery);
     db.close();
