@@ -2,6 +2,8 @@ var express = require("express");
 var router = express.Router();
 const multer = require("multer");
 const Role = require("../middleware/enum/enum");
+const sharp = require("sharp");
+const fs = require("fs");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -28,6 +30,53 @@ var upload = multer({
   },
 });
 
+const uploadFiles = upload.array("upload");
+
+const uploadImages = (req, res, next) => {
+  uploadFiles(req, res, (err) => {
+    if (err instanceof multer.MulterError) {
+      // A Multer error occurred when uploading.
+      if (err.code === "LIMIT_UNEXPECTED_FILE") {
+        // Too many images exceeding the allowed limit
+        // ...
+      }
+    } else if (err) {
+      console.log("");
+    }
+
+    // Everything is ok.
+    next();
+  });
+};
+
+const resizeImages = async (req, res, next) => {
+  if (!req.files) return next();
+
+  req.body.images = [];
+  await Promise.all(
+    req.files.map(async (file) => {
+      const newFilename = file.originalname;
+      sharp(file.path)
+        .resize({ height: 250 })
+        .toBuffer(`${file.originalname}`)
+        .then((data) => {
+          fs.writeFileSync(
+            `${process.cwd() + "/public/productImages/" + file.originalname}`,
+            data
+          );
+        })
+        .catch((err) => {
+          console.log("err", err);
+        });
+
+      req.body.images.push(newFilename);
+      console.log(req.body.images);
+    })
+  );
+
+  next();
+};
+
 // Require controller modules.
 var product_Controller = require("../controllers/productController");
 const authorize = require("../middleware/authorize");
@@ -42,7 +91,12 @@ router.get("/images/:id", product_Controller.product_images_url);
 router.get("/category/:category", product_Controller.product_By_Category);
 
 router.post("/add", authorize([Role.Admin]));
-router.post("/add", upload.array("upload"), product_Controller.product_create);
+router.post(
+  "/add",
+  uploadImages,
+  resizeImages,
+  product_Controller.product_create
+);
 router.post(
   "/notation/:userId/:productId",
   product_Controller.create_product_notation
