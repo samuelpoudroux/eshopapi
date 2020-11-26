@@ -57,7 +57,7 @@ const resizeImages = async (req, res, next) => {
     req.files.map(async (file) => {
       const newFilename = file.originalname;
       sharp(file.path)
-        .resize({ height: 500 })
+        .resize({ height: 500, width: 500 })
         .toBuffer(`${file.originalname}`)
         .then((data) => {
           fs.writeFileSync(

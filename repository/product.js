@@ -78,7 +78,6 @@ const createProduct = async (product, imagesUrl) => {
         advice longtext,
         newNess boolean)`;
 
-      console.log("shortDescription", shortDescription);
       let insertProductQuery = `INSERT INTO products (name, uid, productPrice, stockNumber, category, description, formule, advice, newNess, shortDescription) VALUES ("${name}","${productId}","${productPrice}","${stockNumber}","${category}","${description}","${formule}", "${
         advice ? advice : null
       }", ${newNess === "true" ? newNess : "false"}, "${shortDescription}")`;
