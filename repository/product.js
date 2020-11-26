@@ -52,10 +52,17 @@ const createProduct = async (product, imagesUrl) => {
       stockNumber,
       advice,
       formule,
+      shortDescription,
     } = product;
 
     const productId = uuidv4();
-    if (!name || !productPrice || !category || !stockNumber) {
+    if (
+      !name ||
+      !productPrice ||
+      !category ||
+      !stockNumber ||
+      !shortDescription
+    ) {
       throw "vérifier les champs obligatoires";
     } else {
       let createTableProductQuery = `create table if not exists products(
@@ -64,15 +71,17 @@ const createProduct = async (product, imagesUrl) => {
         name varchar(255)not null,
         productPrice float not null,
         stockNumber int not null,
+        shortDescription varchar(255) not null,
         category varchar(255)not null,
         description longtext not null,
         formule longtext not null,
         advice longtext,
         newNess boolean)`;
 
-      let insertProductQuery = `INSERT INTO products (name, uid, productPrice, stockNumber, category, description, formule, advice, newNess) VALUES ("${name}","${productId}","${productPrice}","${stockNumber}","${category}","${description}","${formule}", "${
+      console.log("shortDescription", shortDescription);
+      let insertProductQuery = `INSERT INTO products (name, uid, productPrice, stockNumber, category, description, formule, advice, newNess, shortDescription) VALUES ("${name}","${productId}","${productPrice}","${stockNumber}","${category}","${description}","${formule}", "${
         advice ? advice : null
-      }", ${newNess === "true" ? newNess : "false"})`;
+      }", ${newNess === "true" ? newNess : "false"}, "${shortDescription}")`;
 
       let createImagesUrlTableQuery = `create table if not exists imagesUrl(
         id int primary key auto_increment,
