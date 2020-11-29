@@ -10,6 +10,7 @@ var categoryRouter = require("./routes/category");
 var contactRouter = require("./routes/contact");
 var userRouter = require("./routes/user");
 var orderRouter = require("./routes/order");
+var paiementRouter = require("./routes/paiement");
 const PORT = process.env.PORT || "8080";
 var enforce = require("express-sslify");
 
@@ -38,6 +39,7 @@ app.use("/categories", categoryRouter);
 app.use("/contact", contactRouter);
 app.use("/user", userRouter);
 app.use("/order", orderRouter);
+app.use("/paiement", paiementRouter);
 
 //listen on every connection
 io.on("connection", (socket) => bot(socket, io));
