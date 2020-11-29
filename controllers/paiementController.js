@@ -1,6 +1,4 @@
-const { log } = require("handlebars");
-
-const stripe = require("stripe")("sk_test_qWJd0aJoypgjJnAUlveeIrG100togYGVd3");
+const stripe = require("stripe")(process.env.STRIPE_KEY);
 
 const postCharge = async (req, res) => {
   try {
