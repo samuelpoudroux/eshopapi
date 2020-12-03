@@ -10,6 +10,7 @@ var categoryRouter = require("./routes/category");
 var contactRouter = require("./routes/contact");
 var userRouter = require("./routes/user");
 var orderRouter = require("./routes/order");
+const { initDb } = require("./initDB");
 var paiementRouter = require("./routes/paiement");
 const PORT = process.env.PORT || "8080";
 var enforce = require("express-sslify");
@@ -18,7 +19,9 @@ const server = app.listen(PORT);
 const bot = require("./socket");
 const io = require("socket.io")(server);
 var cors = require("cors");
+const initDB = require("./initDB");
 
+initDb();
 app.use(express.static(__dirname + "/public/productImages/"));
 app.use(express.static(__dirname + "/public/categoryImages/"));
 process.env === "production" && app.use(enforce.HTTPS());
@@ -39,7 +42,7 @@ app.use("/categories", categoryRouter);
 app.use("/contact", contactRouter);
 app.use("/user", userRouter);
 app.use("/order", orderRouter);
-app.use("/paiement", paiementRouter);
+// app.use("/paiement", paiementRouter);
 
 //listen on every connection
 io.on("connection", (socket) => bot(socket, io));

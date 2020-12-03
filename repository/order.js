@@ -1,15 +1,20 @@
 const makeDb = require("./makeDb");
-const product = require("./product");
 const {
   getProductById,
   getStockNumber,
   updateProductStockNumber,
 } = require("./product");
+const {
+  getOrdersQuery,
+  getOngGoingOrdersQuery,
+  getFinishedOrdersQuery,
+  modifyOrderNameQuery,
+  insertOrderQuery,
+} = require("../query/orderQuery");
 
 const getOrders = async () => {
   try {
     const db = await makeDb();
-    let getOrdersQuery = `SELECT *  FROM orders `;
     const orders = await db.query(getOrdersQuery);
     db.close();
     return orders;
@@ -33,8 +38,7 @@ const buildOrdersWithAllProducts = async (order) => {
 const getOngoingOrdersByUserId = async (userId) => {
   try {
     const db = await makeDb();
-    let getOrdersQuery = `SELECT *  FROM orders WHERE userId = ${userId} AND status ="ongoing"`;
-    let orders = await db.query(getOrdersQuery);
+    let orders = await db.query(getOngGoingOrdersQuery(userId));
     await Promise.all(
       orders.map(async (order) => {
         return await buildOrdersWithAllProducts(order);
@@ -49,8 +53,7 @@ const getOngoingOrdersByUserId = async (userId) => {
 const getHistoryOrdersByUserId = async (userId) => {
   try {
     const db = await makeDb();
-    let getOrdersQuery = `SELECT *  FROM orders WHERE userId =${userId} AND status = 'finished'`;
-    const orders = await db.query(getOrdersQuery);
+    const orders = await db.query(getFinishedOrdersQuery(userId));
     await Promise.all(
       orders.map(async (order) => {
         return await buildOrdersWithAllProducts(order);
@@ -65,8 +68,7 @@ const getHistoryOrdersByUserId = async (userId) => {
 const alterName = async (id, name) => {
   try {
     const db = await makeDb();
-    let modifyOrderNameQuery = `UPDATE orders SET  name= '${name}' WHERE id=${id}`;
-    await db.query(modifyOrderNameQuery);
+    await db.query(modifyOrderNameQuery(name, id));
     db.close();
     return "Commande modifiée avec succés";
   } catch (error) {
@@ -108,19 +110,14 @@ const getDataToInsertQuery = async (body) => {
 
 const create = async (body) => {
   try {
-    let createTableOrderQuery = `create table if not exists orders(
-        id int primary key auto_increment,
-        name varchar(255),
-        products longtext not null,
-        userId int not null,
-        orderDate datetime not null,
-        status varchar(255) not null
-    )`;
     const db = await makeDb();
-    await db.query(createTableOrderQuery);
     const keysAndValues = await getDataToInsertQuery(body);
-    let insertOrderQuery = `INSERT INTO orders (${keysAndValues.keys}) VALUES (${keysAndValues.dataToInsertArrayValues})`;
-    await db.query(insertOrderQuery);
+    await db.query(
+      insertOrderQuery(
+        keysAndValues.keys,
+        keysAndValues.dataToInsertArrayValues
+      )
+    );
     db.close();
     return "Commande validée";
   } catch (error) {

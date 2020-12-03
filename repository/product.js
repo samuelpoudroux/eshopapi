@@ -1,10 +1,27 @@
 const makeDb = require("./makeDb");
 const { v4: uuidv4 } = require("uuid");
+const {
+  getProductsQuery,
+  createTableNotationQuery,
+  insertProductQuery,
+  createImagesUrlTableQuery,
+  getProductQueryByUid,
+  getProductStockNumberByIdQuery,
+  updateStockProductQuery,
+  getProductByCategoryQuery,
+  insertImagesUrlQuery,
+  setProductAssNewNessQuery,
+  getImagesUrlQuery,
+  userOrdersQuery,
+  insertNotationQuery,
+  checkQuery,
+  getProductNotationsQuery,
+  getAverageNotationsQuery,
+} = require("../query/productQuery");
 
 // getManagement
 const getAllProducts = async () => {
   const db = await makeDb();
-  let getProductsQuery = "SELECT * FROM products";
   const results = await db.query(getProductsQuery);
   const products = await getProductsWithNotation(db, results);
   db.close();
@@ -12,9 +29,8 @@ const getAllProducts = async () => {
 };
 
 const getProductById = async (uid) => {
-  let getProductQuery = `SELECT * FROM products WHERE  uid="${uid}"`;
   const db = await makeDb();
-  const results = await db.query(getProductQuery);
+  const results = await db.query(getProductQueryByUid(uid));
   const product = await getProductsWithNotation(db, results);
   db.close();
   return product[0];
@@ -24,17 +40,15 @@ const updateProductStockNumber = async (productId, stockNumber, num) => {
   try {
     const db = await makeDb();
     const stockUpdated = stockNumber - num === 0 ? 0 : stockNumber - num;
-    let updateProductQuery = `UPDATE products set stockNumber=${stockUpdated} WHERE uid="${productId}"`;
-    await db.query(updateProductQuery);
+    await db.query(updateStockProductQuery(stockUpdated, productId));
     await db.close();
   } catch (error) {
     throw error;
   }
 };
 const getProductByCategory = async (category) => {
-  let getProductQuery = `SELECT * FROM products WHERE  category="${category}"`;
   const db = await makeDb();
-  const products = await db.query(getProductQuery);
+  const products = await db.query(getProductByCategoryQuery(category));
   db.close();
   return products;
 };
@@ -65,39 +79,27 @@ const createProduct = async (product, imagesUrl) => {
     ) {
       throw "vérifier les champs obligatoires";
     } else {
-      let createTableProductQuery = `create table if not exists products(
-        id int primary key auto_increment,
-        uid varchar(255),
-        name varchar(255)not null,
-        productPrice float not null,
-        stockNumber int not null,
-        shortDescription varchar(255) not null,
-        category varchar(255)not null,
-        description longtext not null,
-        formule longtext not null,
-        advice longtext,
-        newNess boolean)`;
-
-      let insertProductQuery = `INSERT INTO products (name, uid, productPrice, stockNumber, category, description, formule, advice, newNess, shortDescription) VALUES ("${name}","${productId}","${productPrice}","${stockNumber}","${category}","${description}","${formule}", "${
-        advice ? advice : null
-      }", ${newNess === "true" ? newNess : "false"}, "${shortDescription}")`;
-
-      let createImagesUrlTableQuery = `create table if not exists imagesUrl(
-        id int primary key auto_increment,
-        url varchar(255)not null,
-        productId varchar(255)
-    )`;
-
       const db = await makeDb();
-      await db.query(createTableProductQuery);
       await db.query(createImagesUrlTableQuery);
-      await db.query(insertProductQuery);
+      await db.query(
+        insertProductQuery(
+          name,
+          productId,
+          productPrice,
+          stockNumber,
+          category,
+          description,
+          formule,
+          advice,
+          newNess,
+          shortDescription
+        )
+      );
       imagesUrl &&
         imagesUrl.length > 0 &&
         (await Promise.all(
           imagesUrl.map(async (image) => {
-            let insertImagesUrlQuery = `INSERT INTO imagesUrl (url, productId) VALUES ("${image}","${productId}")`;
-            await db.query(insertImagesUrlQuery);
+            await db.query(insertImagesUrlQuery(image, productId));
           })
         ));
       db.close();
@@ -109,8 +111,7 @@ const createProduct = async (product, imagesUrl) => {
 };
 const isProductNewNess = async (uid, newNess) => {
   const db = await makeDb();
-  let setProductAssNewNessQuery = `UPDATE products SET newNess = ${newNess} WHERE uid = ${uid}`;
-  await db.query(setProductAssNewNessQuery);
+  await db.query(setProductAssNewNessQuery(newNess, uid));
   db.close();
 };
 
@@ -146,8 +147,7 @@ const deleteProduct = async (id) => {
 const getImagesProduct = async (productId) => {
   try {
     const db = await makeDb();
-    let getImagesUrlQuery = `SELECT * FROM imagesUrl WHERE  productId="${productId}"`;
-    const results = await db.query(getImagesUrlQuery);
+    const results = await db.query(getImagesUrlQuery(productId));
     db.close();
     return results;
   } catch (error) {
@@ -157,8 +157,7 @@ const getImagesProduct = async (productId) => {
 const getStockNumber = async (uid) => {
   try {
     const db = await makeDb();
-    let getProductByIdQuery = `SELECT stockNumber  FROM products  WHERE uid = '${uid}'`;
-    const num = await db.query(getProductByIdQuery);
+    const num = await db.query(getProductStockNumberByIdQuery(uid));
     db.close();
 
     if (num.length > 0) {
@@ -171,8 +170,7 @@ const getStockNumber = async (uid) => {
 
 const checkProductEverOrdered = async (db, userId, productId) => {
   try {
-    const userOrdersQuery = `SELECT * FROM orders WHERE userId="${userId}"`;
-    const orders = await db.query(userOrdersQuery);
+    const orders = await db.query(userOrdersQuery(userId));
     const allProductsOrdered = orders.flatMap((product) =>
       JSON.parse(product.products)
     );
@@ -198,17 +196,6 @@ const createProductNotation = async (
 ) => {
   try {
     const db = await makeDb();
-    let createTableNotationQuery = `create table if not exists notations(
-      id int primary key auto_increment,
-      comment varchar(255),
-      note int not null,
-      notationDate datetime not null,
-      productId varchar(255) not null,
-      userId int not null )`;
-
-    let insertNotationQuery = `INSERT INTO notations (comment, note, notationDate, productId, userId) VALUES ("${comment}","${note}","${notationDate}","${productId}","${userId}")`;
-    let checkQuery = `SELECT * FROM notations WHERE productId="${productId}" AND userId="${userId}"`;
-
     await db.query(createTableNotationQuery);
     const productEverOrdered = await checkProductEverOrdered(
       db,
@@ -216,12 +203,14 @@ const createProductNotation = async (
       productId
     );
     if (productEverOrdered) {
-      const notationEverDone = await db.query(checkQuery);
+      const notationEverDone = await db.query(checkQuery(productId, userId));
       if (notationEverDone.length > 0) {
         db.close();
         return { errors: "Vous avez déjà déposé un avis sur ce produit" };
       }
-      await db.query(insertNotationQuery);
+      await db.query(
+        insertNotationQuery(comment, note, notationDate, productId, userId)
+      );
       db.close();
       return { message: "Avis deposé avec succés" };
     } else {
@@ -239,8 +228,7 @@ const createProductNotation = async (
 const getProductNotations = async (productId) => {
   try {
     const db = await makeDb();
-    let getProductNotationsQuery = `SELECT users.lastName, users.firstName, notations.* FROM notations INNER JOIN users ON users.id = notations.userId where notations.productId="${productId}"`;
-    const notations = await db.query(getProductNotationsQuery);
+    const notations = await db.query(getProductNotationsQuery(productId));
     db.close();
     return notations;
   } catch (error) {
@@ -250,16 +238,8 @@ const getProductNotations = async (productId) => {
 
 const getProductsWithNotation = async (db, products) => {
   try {
-    let createTableNotationQuery = `create table if not exists notations(
-      id int primary key auto_increment,
-      comment varchar(255),
-      note int not null,
-      notationDate datetime not null,
-      productId varchar(255) not null,
-      userId int not null )`;
     await db.query(createTableNotationQuery);
 
-    let getAverageNotationsQuery = `SELECT productId, AVG(note) as notation FROM notations GROUP BY productId`;
     const productsNotations = await db.query(getAverageNotationsQuery);
     const productWithNotation = products.map((product) => {
       const productEverEvaluated = productsNotations.find(

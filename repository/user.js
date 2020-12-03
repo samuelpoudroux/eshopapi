@@ -1,11 +1,15 @@
 const makeDb = require("./makeDb");
 const bcrypt = require("bcrypt");
+const {
+  getUserQueryById,
+  updatePasswordQuery,
+  updateUserQuery,
+} = require("../query/userQuery");
 
 const getUserById = async (id, reset = false) => {
   try {
     const db = await makeDb();
-    let getUserQuery = `SELECT *  FROM users WHERE id = ${id}`;
-    const users = await db.query(getUserQuery);
+    const users = await db.query(getUserQueryById(id));
     delete users[0].role;
     if (!reset) {
       delete users[0].password;
@@ -28,8 +32,7 @@ const resetPassword = async (body, id) => {
       throw "Ancien mot de passe incorrect";
     } else {
       const hash = await bcrypt.hash(newPassword, 10);
-      let updatePasswordQuery = `UPDATE users SET  password= '${hash}' WHERE id=${id}`;
-      await db.query(updatePasswordQuery);
+      await db.query(updatePasswordQuery(hash, id));
       db.close();
       return "Mot de passe modifié avec succés";
     }
@@ -50,8 +53,7 @@ const updateUser = async (body, id) => {
       return dataToUpdate;
     };
     const dataQuery = await getDataToUpdate();
-    let updateUserQuery = `UPDATE users SET ${dataQuery} WHERE id=${id}`;
-    await db.query(updateUserQuery);
+    await db.query(updateUserQuery(dataQuery, id));
     db.close();
   } catch (error) {
     throw error;

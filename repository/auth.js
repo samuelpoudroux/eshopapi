@@ -1,6 +1,11 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { validateRegisterInput } = require("../validation/register");
+const {
+  getUserQueryByEmail,
+  insertUserQuery,
+  getUserQueryById,
+} = require("../query/userQuery");
 const makeDb = require("./makeDb");
 
 const { ACCESS_TOKEN } = process.env;
@@ -8,8 +13,7 @@ const { ACCESS_TOKEN } = process.env;
 const login = async (email, password) => {
   try {
     const db = await makeDb();
-    const getUserQueryByEmail = `SELECT * FROM users WHERE email= "${email}"`;
-    const user = await db.query(getUserQueryByEmail);
+    const user = await db.query(getUserQueryByEmail(email));
     if (user.length === 0) {
       return { error: "utilisateur inexistant" };
     } else if (user) {
@@ -56,24 +60,19 @@ const register = async (body) => {
     } = body;
     const hash = await bcrypt.hash(password, 10);
 
-    let createTableUserQuery = `create table if not exists users(
-      id int primary key auto_increment,
-      firstName varchar(255)not null,
-      lastName varchar(255)not null,
-      email varchar(255)not null,
-      password varchar(255)not null,
-      billsAddress longtext not null,
-      dropAddress longtext not null,
-      phoneNumber varchar(255)not null,
-      role varchar(255)not null
-  )`;
-    let insertUserQuery = `INSERT INTO users (firstName, lastName, email, password,billsAddress,dropAddress,phoneNumber,role) VALUES ('${firstName}','${lastName}','${email}','${hash}', '${billsAddress}','${dropAddress}','${phoneNumber}','user')`;
-    const db = await makeDb();
-    await db.query(createTableUserQuery);
-    let getUserQuery = `SELECT * FROM users WHERE email="${email}"`;
-    const users = await db.query(getUserQuery);
+    const users = await db.query(getUserQuery(email));
     if (users.length === 0) {
-      await db.query(insertUserQuery);
+      await db.query(
+        insertUserQuery(
+          firstName,
+          lastName,
+          email,
+          hash,
+          billsAddress,
+          dropAddress,
+          phoneNumber
+        )
+      );
       db.close();
       return { message: "Utilisateur enregistré avec succés" };
     } else {
@@ -87,8 +86,7 @@ const register = async (body) => {
 
 const getRole = async (id) => {
   const db = await makeDb();
-  const getUserQueryByEmail = `SELECT * FROM users WHERE id= "${id}"`;
-  const user = await db.query(getUserQueryByEmail);
+  const user = await db.query(getUserQueryById(id));
   db.close();
   if (user && user.length > 0 && user[0] && user[0].role === "admin") {
     return true;
